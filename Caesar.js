@@ -20,7 +20,8 @@ function encrypt(plaintext, key) {
             if (c > 122) c -= 26;
             ciphertext += String.fromCharCode(c);
         } else {
-            ciphertext += plaintext.charAt(i);
+            //ciphertext += plaintext.charAt(i);
+            ciphertext += c;
         } 
     }
     return ciphertext;
