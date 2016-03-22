@@ -21,7 +21,7 @@ function encrypt(plaintext, key) {
             ciphertext += String.fromCharCode(c);
         } else {
             //ciphertext += plaintext.charAt(i);
-            ciphertext += c;
+            ciphertext += String.fromCharCode(c);
         } 
     }
     return ciphertext;
@@ -32,4 +32,4 @@ console.log("plaintext: ", plaintext);
 console.log("ciphertext: ", encrypt(plaintext, 3));
 
 
-//module.exports = {encrypt: encrypt};
+module.exports = {encrypt: encrypt};
