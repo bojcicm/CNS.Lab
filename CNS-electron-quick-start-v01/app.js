@@ -4,11 +4,11 @@ var $ = require('jquery');
 var net = require('net');
 var Handlebars = require('handlebars');
 // Import our own moduels.
-var encrypt = require('./encrypt/Caesar')
+var encription = require('./encrypt/AEScbc')
 var Bind = require('./binder');
 var Utils = require('./utils'),
     utils = new Utils({usernameLength: 8});
-
+var crypto = require('crypto');
 var Clients = require('./controllers/clientCredentials.js'),
     clients; // A reference to a new clients object    
 
@@ -107,6 +107,8 @@ $(document).ready(function() {
                              */                            
                             if (_msg.clientID && _msg.username && _msg.timestamp && _msg.content) {
                                 _msg.direction = 'incoming';
+                                
+                                
                                 addMsg(msgTmplCompiled, contentBox, _msg);
                                 
                                 console.log(_msg.clientID, "secret:", clients.getSecretOf(_msg.clientID));
@@ -152,16 +154,28 @@ $(document).ready(function() {
 		sendBtn.on("click", function(){
 			var _msg = $.trim(inputBox.text());
 			if ( _msg != '' ) {
-                var _pass = Math.floor(Math.random() * 26);
-				_msg = {clientID: clientID,
-                        username: username,
-						timestamp: date.getHours() + ":" + ('0' + date.getMinutes()).slice(-2),
-                        pass: _pass,
-						content: encrypt.encrypt(_msg,_pass)};
+        
+        var iv = new Buffer(crypto.randomBytes(16));
+        
+        //encrypt message that is being sent
+        var cipherText = encription.encrypt(
+          clients.getSecretOf(clientID),
+          _msg, 
+          iv
+        );
+        //end of encryption
+        
+				_msg = {
+          clientID: clientID,
+          username: username,
+					timestamp: date.getHours() + ":" + ('0' + date.getMinutes()).slice(-2),
+          content: cipherText,
+          iv: iv
+        };
                         
-				clientSocket.write( JSON.stringify(_msg), function() {
-                    addMsg(msgTmplCompiled, contentBox, _msg);
-                });
+				clientSocket.write(JSON.stringify(_msg), function() {
+          addMsg(msgTmplCompiled, contentBox, _msg);
+        });
 			}
             
             inputBox.text('');
@@ -185,7 +199,28 @@ $(document).ready(function() {
 /* Using Handlebars templates. */
 function addMsg(template, container, msg) {        
 	msg.msg_cloud = 'out-msg-cloud';
-    
+  
+  //decrypt message
+  if(msg.username != 'SERVER@FESB')
+  {
+    if(msg.direction == 'incoming')
+    {
+      var decypherStr = encription.decrypt(
+        clients.getSecretOf(msg.clientID),
+        new Buffer(msg.content, "hex"),
+        new Buffer(msg.iv)
+      ); 
+      msg.content = decypherStr.toString("utf8"); 
+    }
+    else
+      msg.content = encription.decrypt(
+        clients.getSecretOf(clientID),
+        new Buffer(msg.content, "hex"),
+        new Buffer(msg.iv)
+      ); 
+  }    
+  //end of decrypt
+  
     switch (msg.direction) {
         case 'incoming':
             msg.text_align ='left';
@@ -195,9 +230,7 @@ function addMsg(template, container, msg) {
         default:
             msg.text_align ='right';
             break;
-    }            
-    console.log(msg.content + ' ' + msg.pass);
-    msg.content = encrypt.encrypt(msg.content,26-msg.pass);
+    }
             
 	container.append($(template(msg)));
 	container.animate({ scrollTop: container[0].scrollHeight }, 'slow');

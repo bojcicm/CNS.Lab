@@ -1,22 +1,20 @@
 var crypto = require('crypto');
-const algorithm = 'aes-128-ecb';
+const algorithm = 'aes-128-ctr';
 
 
 
-function encrypt(password, plaintext){
+function encrypt(password, plaintext, iv){
   var key = createKey(password);
   console.log("keyy:" + key);
-  var iv = new Buffer('1234567812345678');
     var cipher = crypto.createCipheriv(algorithm, key, iv);
     cipher.setAutoPadding(true);
     var cipherText = Buffer.concat([cipher.update(plaintext), cipher.final()]);
-    return cipherText;
+    return cipherText.toString("hex");
 }
 
-function decrypt(password, cipherText){
+function decrypt(password, cipherText, iv){
   var key = createKey(password);
   console.log("keyy:" + key);
-  var iv = new Buffer('1234567812345678');
   var decipher = crypto.createDecipheriv(algorithm, key, iv);
   
   decipher.setAutoPadding(true);
@@ -42,22 +40,3 @@ module.exports = {
   decrypt: decrypt,
   createKey: createKey
 };
-/*
-var plainText = new Buffer("odvoji fileove da bude strukturaodvoji fileove da bude struktura", "utf8");
-console.log("plaintext:", plainText.toString("utf8"));
-
-var key = "password";
-var iv = new Buffer('');
-
-console.log("key:", key);
-console.log("iv:", iv.toString());
-
-var cipherText = encrypt(key,plainText);
-console.log("cipherText:", cipherText.toString("utf8"));
-console.log("cipherText length: ", cipherText.length);
-
-console.log("==========   decrypt     =============")
-var decipherText = decrypt(key,cipherText);
-console.log("decipherText:", decipherText.toString("utf8"));
-console.log("decipherText length: ", decipherText.length);
-*/
