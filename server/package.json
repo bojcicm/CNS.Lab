@@ -1,0 +1,10 @@
+{
+  "name": "cns-server",
+  "version": "1.0.0",
+  "description": "Server for CNS Labs",
+  "dependencies": {
+    "handlebars": "^4.0.5",
+    "jquery": "^2.2.0",
+    "debug": "^2.2.0"
+  }
+}
