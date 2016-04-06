@@ -2,6 +2,8 @@
 var net = require('net');
 var debug = require('debug')('server'); // set DEBUG=server
 
+var swap = require('./components/iv-swap/swap');
+
 var HOST = '0.0.0.0';
 var PORT = 6968;
 
@@ -10,6 +12,7 @@ var date = new Date();
 
 var CLIENTS = [];
 
+//get client ID
 var utils = (function() {
 	var crypto = require('crypto');
 	
@@ -90,11 +93,15 @@ server.on('connection', function(socket) {
 
 function broadcast(sender, msg) {
 	debug('BROADCAST: ' + msg);
-    
+  
+  var _msg =  swap.swapMessageBlock(msg);
+  
+  debug('Message after swap: ' + _msg);
+  
 	for (var i=0, len = CLIENTS.length; i<len; i++) {
 	    if (typeof CLIENTS[i].clientID !== 'undefined' && CLIENTS[i] !== sender) {
 			debug('SENDING: ' + sender.remotePort + '(' + sender.clientID + ') --> ' + CLIENTS[i].remotePort + '(' + CLIENTS[i].clientID + ')');
-	        CLIENTS[i].write(msg);
+	        CLIENTS[i].write(_msg);
 	    }
 	}
 }

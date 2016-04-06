@@ -155,7 +155,7 @@ $(document).ready(function() {
 			var _msg = $.trim(inputBox.text());
 			if ( _msg != '' ) {
         
-        var iv = new Buffer(crypto.randomBytes(16));
+        var iv = crypto.randomBytes(16);
         
         //encrypt message that is being sent
         var cipherText = encription.encrypt(
