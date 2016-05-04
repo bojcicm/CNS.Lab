@@ -94,7 +94,8 @@ server.on('connection', function(socket) {
 function broadcast(sender, msg) {
 	debug('BROADCAST: ' + msg);
   
-  var _msg =  swap.swapMessageBlock(msg);
+  //var _msg =  swap.swapMessageBlock(msg);
+  var _msg = msg;
   
   debug('Message after swap: ' + _msg);
   

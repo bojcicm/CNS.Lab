@@ -3,20 +3,20 @@ const algorithm = 'aes-128-ecb';
 
 
 
-function encrypt(password, plaintext){
+function encrypt(password, plaintext, iv){
   var key = createKey(password);
   console.log("keyy:" + key);
-  var iv = new Buffer('1234567812345678');
+  iv = new Buffer('1234567812345678');
     var cipher = crypto.createCipheriv(algorithm, key, iv);
     cipher.setAutoPadding(true);
     var cipherText = Buffer.concat([cipher.update(plaintext), cipher.final()]);
     return cipherText;
 }
 
-function decrypt(password, cipherText){
+function decrypt(password, cipherText, iv){
   var key = createKey(password);
   console.log("keyy:" + key);
-  var iv = new Buffer('1234567812345678');
+  iv = new Buffer('1234567812345678');
   var decipher = crypto.createDecipheriv(algorithm, key, iv);
   
   decipher.setAutoPadding(true);

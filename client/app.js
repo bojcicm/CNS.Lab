@@ -12,13 +12,14 @@ var crypto = require('crypto');
 var Clients = require('./controllers/clientCredentials.js'),
     clients; // A reference to a new clients object    
 
+
+
 /* Default server info. */
 var SERVER = {    
     server: 'localhost',
     port: '6968',
     nickname: utils.getRandomName()
 };
-
 /* Bind serverModel to the corresponding input fields. */
 
 var serverModel = Bind(SERVER);
